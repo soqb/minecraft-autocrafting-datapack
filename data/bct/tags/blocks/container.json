@@ -1,0 +1,12 @@
+{
+	"values": [
+		"minecraft:hopper",
+		"#bct:chest",
+		"minecraft:furnace",
+		"minecraft:blast_furnace",
+		"minecraft:smoker",
+		"minecraft:dispenser",
+		"minecraft:dropper",
+		"minecraft:barrel"
+	]
+}

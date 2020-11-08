@@ -1,0 +1,1 @@
+tellraw @s ["",{"text":"as a default:","color":"green"},{"text":"\n"},{"text":"[be vanilla (recommended)] ","color":"white","clickEvent":{"action":"run_command","value":"/function bct:config/default/vanilla"}},{"text":"[be modded] ","color":"gold","clickEvent":{"action":"run_command","value":"/function bct:config/default/mod"}}]

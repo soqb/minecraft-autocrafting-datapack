@@ -1,0 +1,1 @@
+data merge storage bct:config {default:0}
