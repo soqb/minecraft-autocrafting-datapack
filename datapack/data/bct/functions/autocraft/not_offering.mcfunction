@@ -7,4 +7,4 @@ execute if block ~ ~ ~ minecraft:hopper{Items:[{Slot:3b,tag:{bct_gui:1b}}]} run 
 execute if block ~ ~ ~ minecraft:hopper{Items:[{Slot:4b,tag:{bct_gui:1b}}]} run function bct:autocraft/hopper/4/root
 
 # crafting
-execute if data block ~ ~1 ~ Items[{Slot:0b,tag:{bct_gui:1b}}] run function bct:autocraft/craft
+execute if data block ~ ~1 ~ Items[{Slot:0b,tag:{bct_gui:1b}}] run function #bct:api/craft
