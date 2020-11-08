@@ -3,6 +3,7 @@ scoreboard objectives add bct.offer_fail dummy
 scoreboard objectives add bct.slot_count dummy
 scoreboard objectives add bct.timer dummy
 scoreboard objectives add bct.empty_tag dummy
+scoreboard objectives add bct.changed dummy
 scoreboard objectives add bct.place minecraft.used:minecraft.crafting_table
 title @a title ["",{"color":"green","text":"reload complete!"}]
 title @a times 0 70 10

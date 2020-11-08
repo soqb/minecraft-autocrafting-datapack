@@ -1,12 +1,31 @@
 # from crafting table
 execute if block ~ ~1 ~ crafting_table run function bct:autocraft/from_table
 
+# bct_now initialisation
+data modify entity @s ArmorItems[1].tag.bct_new_copy set from entity @s ArmorItems[1].tag.bct_new
+data modify entity @s ArmorItems[1].tag.bct_items_copy set from block ~ ~1 ~ Items
+data remove entity @s ArmorItems[1].tag.bct_new_copy[{Slot:0b}]
+data remove entity @s ArmorItems[1].tag.bct_items_copy[{Slot:0b}]
+execute store success score @s bct.changed run data modify entity @s ArmorItems[1].tag.bct_new_copy set from entity @s ArmorItems[1].tag.bct_items_copy
+
+# locking slots
+data modify block ~ ~1 ~ Items[{Slot:3b}].tag merge value {bct_locked:1b}
+data modify block ~ ~1 ~ Items[{Slot:4b}].tag merge value {bct_locked:1b}
+data modify block ~ ~1 ~ Items[{Slot:5b}].tag merge value {bct_locked:1b}
+data modify block ~ ~1 ~ Items[{Slot:12b}].tag merge value {bct_locked:1b}
+data modify block ~ ~1 ~ Items[{Slot:13b}].tag merge value {bct_locked:1b}
+data modify block ~ ~1 ~ Items[{Slot:14b}].tag merge value {bct_locked:1b}
+data modify block ~ ~1 ~ Items[{Slot:21b}].tag merge value {bct_locked:1b}
+data modify block ~ ~1 ~ Items[{Slot:22b}].tag merge value {bct_locked:1b}
+data modify block ~ ~1 ~ Items[{Slot:23b}].tag merge value {bct_locked:1b}
+data modify entity @s ArmorItems[1].tag.bct_new set from block ~ ~1 ~ Items
+
 # scoreboard
 scoreboard players add @s bct.timer 1
 scoreboard players set @s[scores={bct.timer=10..}] bct.timer 0
 
 # offer handling
-execute if entity @s[tag=bct.offering] run function bct:autocraft/offer_handling
+execute if score @s bct.changed matches 1 if entity @s[tag=bct.offering] run function bct:autocraft/offer_handling
 
 # removing table
 execute unless block ~ ~1 ~ barrel{Items:[{tag:{bct_gui:1b}}]} run function bct:autocraft/destroy
@@ -16,7 +35,7 @@ execute unless data block ~ ~1 ~ Items[{Slot:0b}] run data modify block ~ ~1 ~ I
 execute if entity @s[scores={bct.timer=0}] run function bct:autocraft/gui/root
 
 # offer n'handling pas
-execute unless entity @s[tag=bct.offering] run function bct:autocraft/not_offering
+execute if score @s bct.changed matches 1 unless entity @s[tag=bct.offering] run function bct:autocraft/not_offering
 
 # misc.
 data merge entity @s {Fire:1000000}

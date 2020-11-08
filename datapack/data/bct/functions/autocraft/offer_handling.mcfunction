@@ -1,5 +1,5 @@
 # creating a bct_now
-data modify entity @s ArmorItems[1].tag.bct_now set from block ~ ~1 ~ Items
+data modify entity @s ArmorItems[1].tag.bct_now set from entity @s ArmorItems[1].tag.bct_new
 execute unless data entity @s ArmorItems[1].tag.bct_now[{Slot:0b}] run data modify entity @s ArmorItems[1].tag.bct_now append value {Slot:0b,id:"minecraft:structure_void",Count:1b,tag:{bct_gui:1b,CustomModelData:2b,display:{Name:'""'}}}
 execute unless data entity @s ArmorItems[1].tag.bct_now[{Slot:3b}] run data modify entity @s ArmorItems[1].tag.bct_now append value {Slot:3b,id:"minecraft:structure_void",Count:1b,tag:{bct_gui:1b,CustomModelData:2b,display:{Name:'""'}}}
 execute unless data entity @s ArmorItems[1].tag.bct_now[{Slot:4b}] run data modify entity @s ArmorItems[1].tag.bct_now append value {Slot:4b,id:"minecraft:structure_void",Count:1b,tag:{bct_gui:1b,CustomModelData:2b,display:{Name:'""'}}}
