@@ -1,4 +1,3 @@
-say craft is running ahhhh
 #minecraft:acacia_planks
 execute if data block ~ ~1 ~ {Items:[{Slot:3b,id:"minecraft:acacia_planks"}]} run function bct:autocraft/recipes/acacia_planks
 #minecraft:stick

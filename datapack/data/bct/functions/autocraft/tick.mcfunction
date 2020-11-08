@@ -38,7 +38,7 @@ execute if entity @s[scores={bct.timer=0}] run function bct:autocraft/gui/root
 execute if score @s bct.changed matches 1 unless entity @s[tag=bct.offering] run function bct:autocraft/not_offering
 
 # misc.
-data merge entity @s {Fire:1000000}
+data merge entity @s {Fire:10}
 tag @s add bct.ran_func
 
 # hoppers

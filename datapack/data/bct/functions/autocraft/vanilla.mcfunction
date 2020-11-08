@@ -3,7 +3,7 @@ execute if block ~ ~1 ~ barrel{Items:[{tag:{bct_gui:1b}}]} run function bct:auto
 execute unless block ~ ~1 ~ crafting_table run function bct:autocraft/destroy
 
 # misc.
-data merge entity @s {Fire:1000000}
+data merge entity @s {Fire:10}
 tag @s add bct.ran_func
 
 # unassigning bct_locked tag
