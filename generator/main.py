@@ -265,7 +265,7 @@ class gui(wx.Frame):
     panel = wx.Panel(self)
 
     icon = wx.Icon()
-    icon.CopyFromBitmap(wx.Bitmap("icon.ico", wx.BITMAP_TYPE_ICO))
+    icon.CopyFromBitmap(wx.Bitmap("icon.png", wx.BITMAP_TYPE_PNG))
     self.SetIcon(icon)
 
     wx.StaticText(panel, -1, label='source path:', pos=(20, 0), size=(500, 20))
