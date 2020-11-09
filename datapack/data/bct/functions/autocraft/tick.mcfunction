@@ -2,10 +2,10 @@
 execute if block ~ ~1 ~ crafting_table run function bct:autocraft/from_table
 
 # bct_now initialisation
+data remove entity @s ArmorItems[1].tag.bct_new_copy
+data remove entity @s ArmorItems[1].tag.bct_items_copy
 data modify entity @s ArmorItems[1].tag.bct_new_copy set from entity @s ArmorItems[1].tag.bct_new
 data modify entity @s ArmorItems[1].tag.bct_items_copy set from block ~ ~1 ~ Items
-data remove entity @s ArmorItems[1].tag.bct_new_copy[{Slot:0b}]
-data remove entity @s ArmorItems[1].tag.bct_items_copy[{Slot:0b}]
 execute store success score @s bct.changed run data modify entity @s ArmorItems[1].tag.bct_new_copy set from entity @s ArmorItems[1].tag.bct_items_copy
 
 # locking slots
@@ -24,6 +24,9 @@ data modify entity @s ArmorItems[1].tag.bct_new set from block ~ ~1 ~ Items
 scoreboard players add @s bct.timer 1
 scoreboard players set @s[scores={bct.timer=10..}] bct.timer 0
 
+# moving items to hoppers
+function bct:autocraft/hopper/root
+
 # offer handling
 execute if score @s bct.changed matches 1 if entity @s[tag=bct.offering] run function bct:autocraft/offer_handling
 
@@ -36,6 +39,7 @@ execute if entity @s[scores={bct.timer=0}] run function bct:autocraft/gui/root
 
 # offer n'handling pas
 execute if score @s bct.changed matches 1 unless entity @s[tag=bct.offering] run function bct:autocraft/not_offering
+
 
 # misc.
 data merge entity @s {Fire:10}
