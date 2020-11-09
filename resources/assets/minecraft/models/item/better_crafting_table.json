@@ -1,0 +1,6 @@
+{
+    "parent": "block/crafting_table",
+    "display": {
+        "head": {"translation": [ 0, -8.5, 0 ], "scale": [ 1.65, 1.65, 1.65 ]}
+    }
+}

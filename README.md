@@ -20,12 +20,12 @@ features of this datapack (all optional):
 - an optional resource pack that makes everything look a bit cleaner (recommended).
 
 - a generator for compatible recipes from json recipe files.
-
-  - [image](https://i.imgur.com/LIrYJFb.png)
   
   - the process should be intuative enough: import source, open destination, generate, but one thing could leave you baffled
     
     - after generation, you may get a number of `invalid recipe`'s. these show which recipes could not be converted either because they are for something like furnaces or they are special crafting types like `minecraft:crafting_special_firework_rocket` which can't be emulated by the system (yet)
+ 
+  - [image](https://i.imgur.com/LIrYJFb.png)
 
 
 coming features:

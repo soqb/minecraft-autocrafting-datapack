@@ -1,0 +1,6 @@
+{
+    "parent": "block/crafting_table",
+	"overrides": [
+		{"predicate": {"custom_model_data":1}, "model": "item/better_crafting_table"}
+	]
+}

@@ -1,0 +1,6 @@
+{
+    "parent": "item/gui",
+    "textures": {
+        "layer0": "gui/right_up_arrow"
+    }
+}

@@ -1,0 +1,6 @@
+{
+	"parent": "item/gui/right_arrow_head",
+    "display": {
+    	"gui": {"rotation": [ 0, 0, 90 ]}
+    }
+}

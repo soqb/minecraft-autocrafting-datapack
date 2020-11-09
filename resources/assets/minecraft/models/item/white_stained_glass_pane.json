@@ -1,0 +1,22 @@
+{
+	"parent": "item/generated",
+	"textures": {
+		"layer0": "block/white_stained_glass"
+	},
+	"overrides": [
+		{"predicate": {"custom_model_data":1}, "model": "item/gui/blank"},
+		{"predicate": {"custom_model_data":2}, "model": "item/gui/empty"},
+		{"predicate": {"custom_model_data":3}, "model": "item/gui/right_arrow"},
+		{"predicate": {"custom_model_data":4}, "model": "item/gui/right_arrow_head"},
+		{"predicate": {"custom_model_data":5}, "model": "item/gui/right_arrow_end"},
+		{"predicate": {"custom_model_data":6}, "model": "item/gui/up_arrow"},
+		{"predicate": {"custom_model_data":7}, "model": "item/gui/up_arrow_head"},
+		{"predicate": {"custom_model_data":8}, "model": "item/gui/up_arrow_end"},
+		{"predicate": {"custom_model_data":9}, "model": "item/gui/left_arrow"},
+		{"predicate": {"custom_model_data":10}, "model": "item/gui/left_arrow_head"},
+		{"predicate": {"custom_model_data":11}, "model": "item/gui/left_arrow_end"},
+		{"predicate": {"custom_model_data":12}, "model": "item/gui/down_arrow"},
+		{"predicate": {"custom_model_data":13}, "model": "item/gui/down_arrow_head"},
+		{"predicate": {"custom_model_data":14}, "model": "item/gui/down_arrow_end"}
+	]
+}
