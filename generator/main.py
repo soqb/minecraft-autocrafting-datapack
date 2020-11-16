@@ -6,7 +6,6 @@ from datetime import datetime as time
 import numpy as np
 import sys
 def pack_root(path):
-  print('\\\\?\\' + os.path.join(os.path.abspath(path),'data'))
   return '\\\\?\\' + os.path.join(os.path.abspath(path),'data')
 supress = False
 slots = ['3','4','5','12','13','14','21','22','23']
@@ -80,14 +79,14 @@ class ktag:
     self.both = value
     self.item = False
 def create_predicate(path,namespace,root):
-  pathi = os.path.join(root,'bct','predicates','tags',namespace)
+  pathi = os.path.join(root,'ac','predicates','tags',namespace)
   if not os.path.exists(pathi):
     os.makedirs(pathi)
   fname = os.path.splitext(os.path.basename(path))[0]
   with open(os.path.join(pathi,fname) + '.json','w+') as f:
     f.write(f'{{"condition":"minecraft:entity_properties","entity":"this","predicate":{{"equipment":{{"feet":{{"tag":"{namespace}:{fname}"}}}}}}}}')
 def create_tag(options,root):
-  pathi2 = os.path.join(root,'bct','tags','items')
+  pathi2 = os.path.join(root,'ac','tags','items')
   if not os.path.exists(pathi2):
     os.makedirs(pathi2)
   strops = ''
@@ -97,10 +96,10 @@ def create_tag(options,root):
       strops += ','
   with open(os.path.join(pathi2,kitem(options[0]).value) + '.json','w+') as f:
     f.write(f'{{"replace": false,"values": [{strops}]}}')
-  create_predicate(kitem(options[0]).value,'bct',root)
+  create_predicate(kitem(options[0]).value,'ac',root)
 def write_functions(keys_in,out_id,out_count,root):
-  path = os.path.join(root,'bct','functions','autocraft','recipes')
-  old_path = os.path.join(root,'bct','functions','autocraft','craft')
+  path = os.path.join(root,'ac','functions','autocraft','recipes')
+  old_path = os.path.join(root,'ac','functions','autocraft','craft')
   if os.path.isfile(old_path + '.mcfunction') == False:
     open(old_path + '.mcfunction','w+').close()
   if os.path.isdir(path) == False:
@@ -117,31 +116,31 @@ def write_functions(keys_in,out_id,out_count,root):
         file.write(f'#{keys_in[i].both}\n')
         if keys_in[i].item:
           if keys_in[i].both == 'builtin:null':
-            file.write(f'execute unless data block ~ ~1 ~ {{Items:[{{Slot:{slots[i]}b}}]}} run function bct:autocraft/{func_path}\n')
+            file.write(f'execute unless data block ~ ~1 ~ {{Items:[{{Slot:{slots[i]}b}}]}} run function ac:autocraft/{func_path}\n')
           else:
-            file.write(f'execute if data block ~ ~1 ~ {{Items:[{{Slot:{slots[i]}b,id:"{keys_in[i].both}"}}]}} run function bct:autocraft/{func_path}\n')
+            file.write(f'execute if data block ~ ~1 ~ {{Items:[{{Slot:{slots[i]}b,id:"{keys_in[i].both}"}}]}} run function ac:autocraft/{func_path}\n')
         else:
           file.write('data modify entity @s ArmorItems[0] set value {id:"minecraft:jigsaw",Count:1b}\n')
           file.write(f'data modify entity @s ArmorItems[0].id set from block ~ ~1 ~ Items[{{Slot:{slots[i]}b}}].id\n')
-          file.write(f'execute if predicate bct:tags/{keys_in[i].namespace}/{keys_in[i].value} run function bct:autocraft/{func_path}\n')
+          file.write(f'execute if predicate ac:tags/{keys_in[i].namespace}/{keys_in[i].value} run function ac:autocraft/{func_path}\n')
   with open('\\'.join(path.split('/')) + '.mcfunction','a+') as file:
     file.write(f'#{keys_in[8].both}\n')
     if keys_in[8].item:
       if keys_in[8].both == 'builtin:null':
-        file.write(f'execute unless data block ~ ~1 ~ {{Items:[{{Slot:{slots[8]}b}}]}} run function bct:autocraft/{func_path}/{keys_in[8].value}\n')
+        file.write(f'execute unless data block ~ ~1 ~ {{Items:[{{Slot:{slots[8]}b}}]}} run function ac:autocraft/{func_path}/{keys_in[8].value}\n')
       else:
-        file.write(f'execute if data block ~ ~1 ~ {{Items:[{{Slot:{slots[8]}b,id:"{keys_in[8].both}"}}]}} run function bct:autocraft/{func_path}/{keys_in[8].value}\n')
+        file.write(f'execute if data block ~ ~1 ~ {{Items:[{{Slot:{slots[8]}b,id:"{keys_in[8].both}"}}]}} run function ac:autocraft/{func_path}/{keys_in[8].value}\n')
     else:
       file.write('data modify entity @s ArmorItems[0] set value {id:"minecraft:jigsaw",Count:1b}\n')
       file.write(f'data modify entity @s ArmorItems[0].id set from block ~ ~1 ~ Items[{{Slot:{slots[8]}b}}].id\n')
-      file.write(f'execute if predicate bct:tags/{keys_in[8].namespace}/{keys_in[8].value} run function bct:autocraft/{func_path}/{keys_in[8].value}\n')
+      file.write(f'execute if predicate ac:tags/{keys_in[8].namespace}/{keys_in[8].value} run function ac:autocraft/{func_path}/{keys_in[8].value}\n')
   with open('\\'.join(path.split('/')) + '\\' + keys_in[8].value+'.mcfunction','w+') as file:
     file.write(f'data modify block ~ ~1 ~ Items[{{Slot:0b}}] set value {{Slot:0b,id:"{out_id}",Count:{out_count}b}}\n')
-    file.write('tag @s add bct.offering\n')
-    file.write('data modify entity @s ArmorItems[1].tag.bct_last set from block ~ ~1 ~ Items\n')
+    file.write('tag @s add ac.offering\n')
+    file.write('data modify entity @s ArmorItems[1].tag.ac_last set from block ~ ~1 ~ Items\n')
     for i in range(9):
       if keys_in[i].both == 'builtin:null':
-        file.write(f'data modify entity @s ArmorItems[1].tag.bct_last append value {{Slot:{slots[i]}b,id:"minecraft:structure_void",Count:1b,tag:{{bct_gui:1b,CustomModelData:2b,display:{{Name:\'""\'}}}}}}\n')
+        file.write(f'data modify entity @s ArmorItems[1].tag.ac_last append value {{Slot:{slots[i]}b,id:"minecraft:structure_void",Count:1b,tag:{{ac_gui:1b,CustomModelData:2b,display:{{Name:\'""\'}}}}}}\n')
 
 def create_recipe(path,root):
   with open(path) as file:
@@ -171,7 +170,7 @@ def create_recipe(path,root):
                 if 'item' in i:
                   ops.append(i['item'])
               create_tag(ops,root)
-              op = 'bct:' + ops[0][ops[0].index(':') + 1:]
+              op = 'ac:' + ops[0][ops[0].index(':') + 1:]
               key_values.append(ktag(op))
             else:
               key_values.append(kitem('builtin:null'))
@@ -208,7 +207,7 @@ def create_recipe(path,root):
             if 'item' in i2:
               ops.append(i2['item'])
           create_tag(ops,root)
-          op = 'bct:' + ops[0][ops[0].index(':') + 1:]
+          op = 'ac:' + ops[0][ops[0].index(':') + 1:]
           keys_in.append(ktag(op))
         else:
           keys_in.append(kitem('builtin:null'))
@@ -301,11 +300,11 @@ class gui(wx.Frame):
         root = pack_root(self.output.GetValue())
         if os.path.exists(root):
           log_print('i sure hope you know what you\'re doing!')
-          length = len(nested_paths(os.path.join(root,'bct','functions','autocraft','recipes')))
-          clear_contents(os.path.join(root,'bct','functions','autocraft','recipes'))
-          clear_contents(os.path.join(root,'bct','predicates','tags'))
-          clear_contents(os.path.join(root,'bct','tags','items'))
-          open(os.path.join(root,'bct','functions','autocraft','craft.mcfunction'),'w+').close()
+          length = len(nested_paths(os.path.join(root,'ac','functions','autocraft','recipes')))
+          clear_contents(os.path.join(root,'ac','functions','autocraft','recipes'))
+          clear_contents(os.path.join(root,'ac','predicates','tags'))
+          clear_contents(os.path.join(root,'ac','tags','items'))
+          open(os.path.join(root,'ac','functions','autocraft','craft.mcfunction'),'w+').close()
           log_print(f'deleted {length} files')
         else:
           log_print(f'invalid path. the path specified does not exist. ({root[4:]})')
@@ -314,8 +313,6 @@ class gui(wx.Frame):
     dest = pack_root(self.output.GetValue())
     if not os.path.isdir(os.path.join(dest,'recipes')):
       log_print('no \'recipes\' folder found. creating new folder')
-      os.mkdir(os.path.join(dest,'recipes'))
-      open(os.path.join(dest,'craft.mcfunction'),'w+').close()
 
     if os.path.isdir(os.path.join(path,'data')):
       path = os.path.join(path,'data')

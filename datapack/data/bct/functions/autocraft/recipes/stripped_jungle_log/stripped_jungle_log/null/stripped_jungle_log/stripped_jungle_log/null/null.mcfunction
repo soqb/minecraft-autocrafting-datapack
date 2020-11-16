@@ -1,2 +1,0 @@
-#builtin:null
-execute unless data block ~ ~1 ~ {Items:[{Slot:22b}]} run function bct:autocraft/recipes/stripped_jungle_log/stripped_jungle_log/null/stripped_jungle_log/stripped_jungle_log/null/null/null

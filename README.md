@@ -9,7 +9,7 @@ features of this datapack (all optional):
 
   - `modded` enables features such as autocrafting and nbt crafting. this will produce about 2 mspt
 
-  - the `modded` mode is enabled when a block from the `bct:hoppery` blocks tag is either above or below the crafting table
+  - the `modded` mode is enabled when a block from the `ac:hoppery` blocks tag is either above or below the crafting table
 
 - prebaked vanilla recipes
 

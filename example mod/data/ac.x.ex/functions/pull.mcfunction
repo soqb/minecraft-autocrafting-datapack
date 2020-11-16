@@ -1,0 +1,1 @@
+say you took from the second to last slot on the second to last row you lazy bastard
