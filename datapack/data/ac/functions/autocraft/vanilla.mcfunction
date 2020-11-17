@@ -1,5 +1,5 @@
 # removing table
-execute if block ~ ~1 ~ barrel{Items:[{tag:{ac_gui:1b}}]} run function ac:autocraft/to_table
+execute if block ~ ~1 ~ barrel{Items:[{tag:{ac_gui:1b}}]} run function ac:autocraft/vanilla_switch
 execute unless block ~ ~1 ~ crafting_table run function ac:autocraft/destroy
 
 # misc.

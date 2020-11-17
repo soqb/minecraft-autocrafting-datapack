@@ -1,5 +1,5 @@
 # from crafting table
-execute if block ~ ~1 ~ crafting_table run function ac:autocraft/from_table
+execute if block ~ ~1 ~ crafting_table run function ac:autocraft/mod_switch
 
 # ac_now initialisation
 data remove entity @s ArmorItems[1].tag.ac_new_copy

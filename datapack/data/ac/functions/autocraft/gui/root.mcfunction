@@ -1,7 +1,3 @@
-# clearing panes
-clear @a minecraft:white_stained_glass_pane{ac_gui:1b}
-clear @a minecraft:light_gray_stained_glass_pane{ac_gui:1b}
-
 # resetting slots
 execute unless data block ~ ~1 ~ Items[{Slot:1b,tag:{ac_gui:1b}}] run function #ac:api/gui/pull/1
 execute unless data block ~ ~1 ~ Items[{Slot:2b,tag:{ac_gui:1b}}] run function #ac:api/gui/pull/2

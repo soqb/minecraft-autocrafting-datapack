@@ -7,3 +7,6 @@ execute as @a[scores={ac.place=1..}] at @s positioned ~ 0 ~ if entity @s[distanc
 scoreboard players set @a[scores={ac.place=1..}] ac.place 0
 execute as @a[nbt={Inventory:[{tag:{ac_locked:1b}}]}] at @s if block ~ 255 ~ air run function ac:fix_items/player
 execute as @e[type=item,nbt={Item:{tag:{ac_locked:1b}}}] at @s run function ac:fix_items/item
+
+# clearing panes
+clear @a #ac:items{ac_gui:1b}
