@@ -1,1 +1,0 @@
-data modify block ~ ~1 ~ Items[{Slot:16b}] merge value {id:"minecraft:dirt"}
