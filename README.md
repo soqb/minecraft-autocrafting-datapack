@@ -92,7 +92,7 @@ this datapack allows for relatively lag free vanilla compatible autocrafting
       - `draw` is called when a gui item is put into the container. use this to render your custom buttons and gui elements. in rare cases, draw can be called without calling `pull`
       - `pull` is called when a player removes an item from the gui. this happens before `draw`. use this to trigger your custom buttons
       - not all slots support these events, below is a table of which are usable
-        |   -   |  0  |  1  |  2  |  3  |  4  |  5  |  6  |  7  |  8  |
+        |       |  0  |  1  |  2  |  3  |  4  |  5  |  6  |  7  |  8  |
         | :---: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
         | **0** | ❌ | ✅ | ✅ | ❌ | ❌ | ❌ | ✅ | ✅ | ✅ |
         | **1** | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ | ✅ | ✅ | ✅ |
