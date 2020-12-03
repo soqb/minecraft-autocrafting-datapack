@@ -97,8 +97,8 @@ this datapack allows for relatively lag free vanilla compatible autocrafting
         | **0** | ❌ | ✅ | ✅ | ❌ | ❌ | ❌ | ✅ | ✅ | ✅ |
         | **1** | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ | ✅ | ✅ | ✅ |
         | **2** | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ | ✅ | ✅ | ✅ |
-    - there are two pairs of events, `#ac:api/summon`, `#ac:api/destroy`, `#ac:api/mod_switch` and `#ac:api/vanilla_switch` which deal with the changing states of crafting tables  
-    `summon` is called when a crafting table is summoned, after it is fully initialised  
-    `destroy` is called when, you guessed it, the crafting table is destoyed (this happens before any blocks or entities are killed)  
-    `mod_switch` is called at any point when the crafting table goes into `modded` mode (mentioned above)  
-    `vanilla_switch` happens when the table switches to `vanilla` mode.
+    - there are two pairs of events, `#ac:api/summon`, `#ac:api/destroy`, `#ac:api/mod_switch` and `#ac:api/vanilla_switch` which deal with the changing states of crafting tables.
+    - `summon` is called when a crafting table is summoned, after it is fully initialised
+    - `destroy` is called when, you guessed it, the crafting table is destoyed (this happens before any blocks or entities are killed)
+    - `mod_switch` is called at any point when the crafting table goes into `modded` mode (mentioned above)
+    - `vanilla_switch` happens when the table switches to `vanilla` mode.
