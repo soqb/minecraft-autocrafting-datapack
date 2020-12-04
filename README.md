@@ -44,7 +44,7 @@ this datapack allows for relatively lag free vanilla compatible autocrafting
 
   - this datapack has several thousand files in it, it might take a while to download
 
-  - this also goes for reloads, for me it takes ~5 seconds per reload, but rest assured, you will know when the reload completes!
+  - this also goes for reloads, for me it takes ~5 seconds per reload, but if you want to know when the reload completes, run the command `/tag @s add debug`
 
   - feel free to contact me on discord `radiish#9483` if you spot a bug or have a question
 
