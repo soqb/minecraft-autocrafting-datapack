@@ -16,6 +16,8 @@ def verify_pack_root(path):
     os.makedirs(tpath)
   if not os.path.isdir(os.path.join(tpath, 'data','ac','tags','functions','api')):
     os.makedirs(os.path.join(tpath, 'data','ac','tags','functions','api'))
+  if not os.path.isdir(os.path.join(tpath, 'data','minecraft','tags','functions')):
+    os.makedirs(os.path.join(tpath, 'data','minecraft','tags','functions'))
   space = simp_nmsp_path(os.path.basename(os.path.normpath(path)))
   nmsp = os.path.join(tpath, 'data', space)
   if not os.path.isdir(os.path.join(nmsp,'functions')):
@@ -30,6 +32,9 @@ def verify_pack_root(path):
   if not os.path.isfile(os.path.join(tpath, 'data', 'ac', 'tags', 'functions', 'api','craft.json')):
     with open(os.path.join(tpath, 'data', 'ac', 'tags', 'functions', 'api','craft.json'),'w+') as f:
       f.write(f'{{"replace":false,"values":["{space}:recipes"]}}')
+  if not os.path.isfile(os.path.join(tpath, 'data', 'minecraft', 'tags', 'functions','load.json')):
+    with open(os.path.join(tpath, 'data', 'minecraft', 'tags', 'functions','load.json'),'w+') as f:
+      f.write(f'{{"replace":false,"values":["{space}:load"]}}')
   return '\\\\?\\' + tpath
 def pack_nmsp(path):
   return os.path.join(os.path.abspath(path), 'data', simp_nmsp_path(os.path.basename(os.path.normpath(path))))
@@ -83,13 +88,15 @@ class ktag:
     self.namespace = value.split(':')[0]
     self.both = value
     self.item = False
-def create_predicate(tag,root):
+def create_predicate(tag,root,tagname = None):
+  if tagname == None:
+    tagname = f'{tag.namespace}:{tag.value}'
   pathi = os.path.join(root,'predicates','tags',tag.namespace)
   if not os.path.isdir(pathi):
     os.makedirs(pathi)
   with open(os.path.join(pathi, tag.value) + '.json','w+') as f:
-    f.write(f'{{"condition":"minecraft:entity_properties","entity":"this","predicate":{{"equipment":{{"feet":{{"tag":"{tag.namespace}:{tag.value}"}}}}}}}}')
-def create_tag(options,root):
+    f.write(f'{{"condition":"minecraft:entity_properties","entity":"this","predicate":{{"equipment":{{"feet":{{"tag":"{tagname}"}}}}}}}}')
+def create_tag(options,root,namespace):
   item = kitem(options[0])
   pathi2 = os.path.join(root,'tags','items',item.namespace)
   if not os.path.isdir(pathi2):
@@ -101,7 +108,7 @@ def create_tag(options,root):
       strops += ','
   with open(os.path.join(pathi2,item.value) + '.json','w+') as f:
     f.write(f'{{"replace":false,"values":[{strops}]}}')
-  create_predicate(item,root)
+  create_predicate(item,root,f'{namespace}:{item.namespace}/{item.value}')
 def write_functions(keys_in,out_id,out_count,root,namespace):
   path = os.path.join(root,'functions','recipes')
   old_path = path
@@ -174,9 +181,10 @@ def create_recipe(path,root,namespace):
               for i in data['key'][key]:
                 if 'item' in i:
                   ops.append(i['item'])
-              create_tag(ops,root)
-              op = f'{namespace}:' + ops[0][ops[0].index(':') + 1:]
-              key_values.append(ktag(op))
+                elif 'tag' in i:
+                  ops.append('#' + i['tag'])
+              create_tag(ops,root,namespace)
+              key_values.append(ktag(ops[0]))
             else:
               key_values.append(kitem('builtin:null'))
       pattern = np.pad(pattern, ((0,3-y),(0,3-x)),mode='constant',constant_values=0)
@@ -211,7 +219,7 @@ def create_recipe(path,root,namespace):
           for i2 in ingreds[i]:
             if 'item' in i2:
               ops.append(i2['item'])
-          create_tag(ops,root)
+          create_tag(ops,root,namespace)
           op = f'{namespace}:' + ops[0][ops[0].index(':') + 1:]
           keys_in.append(ktag(op))
         else:
@@ -223,7 +231,7 @@ def create_recipe(path,root,namespace):
     else:
       if not supress:
         if ctype == 'crafting_special':
-          log_print(f'invalid recipe. unable to create recipe ({os.path.basename(path)}) because its features are not emulatable within the current restraints of minecraft functions ({ctype})')
+          log_print(f'invalid recipe. unable to create recipe ({os.path.basename(path)}) because its features are not emulatable by the current system ({ctype})')
         elif ctype in not_table:
           log_print(f'invalid recipe. unable to create recipe ({os.path.basename(path)}) because it is implemented by other means ({ctype})')
         else:
@@ -343,6 +351,8 @@ class gui(wx.Frame):
       paths = [os.path.join(path, f, 'recipes') for f in os.listdir(path) if os.path.isdir(os.path.join(path, f, 'recipes'))]
       for f in paths:
         create_from_dir(f,dest,namespace)
+      with open(os.path.join(dest,'functions','load.mcfunction'),'w+') as f:
+        f.write(f'tellraw @a[tag=debug] ["",{{"color":"yellow","translate":"debug.prefix","bold":true}}," ","loaded {len(paths)} recipes from {namespace[5:]}"]')
     else:
       log_print('invalid path. make sure you are using the datapack and not the recipes or data folder')
 app = wx.App()
