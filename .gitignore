@@ -1,4 +1,6 @@
 *.zip
 *.bat
 generator/last.log
+generator/pack
+vanilla-recipes
 zips

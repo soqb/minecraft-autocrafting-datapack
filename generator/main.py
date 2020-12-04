@@ -5,8 +5,36 @@ import wx
 from datetime import datetime as time
 import numpy as np
 import sys
-def pack_root(path):
-  return '\\\\?\\' + os.path.join(os.path.abspath(path),'data')
+import re
+def simp_pack_path(path):
+  return re.sub(r'\s+','_',path)
+def simp_nmsp_path(path):
+  return 'ac.g.' + re.sub(r'\.ac\.g$', '', re.sub(r'(\s+|-)','_',path))
+def verify_pack_root(path):
+  tpath = os.path.abspath(path)
+  if not os.path.exists(tpath):
+    os.makedirs(tpath)
+  if not os.path.isdir(os.path.join(tpath, 'data','ac','tags','functions','api')):
+    os.makedirs(os.path.join(tpath, 'data','ac','tags','functions','api'))
+  space = simp_nmsp_path(os.path.basename(os.path.normpath(path)))
+  nmsp = os.path.join(tpath, 'data', space)
+  if not os.path.isdir(os.path.join(nmsp,'functions')):
+    os.makedirs(os.path.join(nmsp,'functions'))
+  if not os.path.isdir(os.path.join(nmsp,'tags','items')):
+    os.makedirs(os.path.join(nmsp,'tags','items'))
+  if not os.path.isdir(os.path.join(nmsp,'predicates')):
+    os.makedirs(os.path.join(nmsp,'predicates'))
+  if not os.path.isfile(os.path.join(tpath, 'pack.mcmeta')):
+    with open(os.path.join(tpath, 'pack.mcmeta'),'w+') as f:
+      f.write('{"pack":{"pack_format":6,"description":"generated recipepack for radiish\'s autocrafting datapack"}}')
+  if not os.path.isfile(os.path.join(tpath, 'data', 'ac', 'tags', 'functions', 'api','craft.json')):
+    with open(os.path.join(tpath, 'data', 'ac', 'tags', 'functions', 'api','craft.json'),'w+') as f:
+      f.write(f'{{"replace":false,"values":["{space}:recipes"]}}')
+  return '\\\\?\\' + tpath
+def pack_nmsp(path):
+  return os.path.join(os.path.abspath(path), 'data', simp_nmsp_path(os.path.basename(os.path.normpath(path))))
+def mcpath(path):
+  return path.replace('\\','/')
 supress = False
 slots = ['3','4','5','12','13','14','21','22','23']
 not_table = ['smoking','stonecutting','smelting','blasting','campfire_cooking']
@@ -20,29 +48,6 @@ def resource_path(relative_path):
     base_path = os.path.abspath(".")
 
   return os.path.join(base_path, relative_path)
-'''
-def Index(string,match,index):
-  matches = 0
-  result = 0
-  for char in string:
-    if char == match[0]:
-      matches += 1
-    if index >= 0 and matches <= index:
-      result += 1
-    elif index < 0 and matches < string.count(match[0]) + index:
-      result += 1
-  return result
-def Trim(string,match,index = 0):
-  return string[Index(string,match,index) + 1:]
-
-def TrimReverse(string,match,index = 0):
-  return string[:Index(string,match,index)]
-
-
-
-def LogEdit(msg, index = 0):
-  self.log.SetValue(TrimReverse(self.log.GetValue(),'\n', index) + '\n' + msg)
-'''
 def log_print(msg):
   global g_gui
   g_gui.log.SetValue(g_gui.log.GetValue() + '\n' + msg)
@@ -78,28 +83,28 @@ class ktag:
     self.namespace = value.split(':')[0]
     self.both = value
     self.item = False
-def create_predicate(path,namespace,root):
-  pathi = os.path.join(root,'ac','predicates','tags',namespace)
-  if not os.path.exists(pathi):
+def create_predicate(tag,root):
+  pathi = os.path.join(root,'predicates','tags',tag.namespace)
+  if not os.path.isdir(pathi):
     os.makedirs(pathi)
-  fname = os.path.splitext(os.path.basename(path))[0]
-  with open(os.path.join(pathi,fname) + '.json','w+') as f:
-    f.write(f'{{"condition":"minecraft:entity_properties","entity":"this","predicate":{{"equipment":{{"feet":{{"tag":"{namespace}:{fname}"}}}}}}}}')
+  with open(os.path.join(pathi, tag.value) + '.json','w+') as f:
+    f.write(f'{{"condition":"minecraft:entity_properties","entity":"this","predicate":{{"equipment":{{"feet":{{"tag":"{tag.namespace}:{tag.value}"}}}}}}}}')
 def create_tag(options,root):
-  pathi2 = os.path.join(root,'ac','tags','items')
-  if not os.path.exists(pathi2):
+  item = kitem(options[0])
+  pathi2 = os.path.join(root,'tags','items',item.namespace)
+  if not os.path.isdir(pathi2):
     os.makedirs(pathi2)
   strops = ''
   for op in options:
     strops += f'"{op}"'
     if op != options[len(options)-1]:
       strops += ','
-  with open(os.path.join(pathi2,kitem(options[0]).value) + '.json','w+') as f:
-    f.write(f'{{"replace": false,"values": [{strops}]}}')
-  create_predicate(kitem(options[0]).value,'ac',root)
-def write_functions(keys_in,out_id,out_count,root):
-  path = os.path.join(root,'ac','functions','autocraft','recipes')
-  old_path = os.path.join(root,'ac','functions','autocraft','craft')
+  with open(os.path.join(pathi2,item.value) + '.json','w+') as f:
+    f.write(f'{{"replace":false,"values":[{strops}]}}')
+  create_predicate(item,root)
+def write_functions(keys_in,out_id,out_count,root,namespace):
+  path = os.path.join(root,'functions','recipes')
+  old_path = path
   if os.path.isfile(old_path + '.mcfunction') == False:
     open(old_path + '.mcfunction','w+').close()
   if os.path.isdir(path) == False:
@@ -116,24 +121,24 @@ def write_functions(keys_in,out_id,out_count,root):
         file.write(f'#{keys_in[i].both}\n')
         if keys_in[i].item:
           if keys_in[i].both == 'builtin:null':
-            file.write(f'execute unless data block ~ ~1 ~ {{Items:[{{Slot:{slots[i]}b}}]}} run function ac:autocraft/{func_path}\n')
+            file.write(f'execute unless data block ~ ~1 ~ {{Items:[{{Slot:{slots[i]}b}}]}} run function {namespace}:{func_path}\n')
           else:
-            file.write(f'execute if data block ~ ~1 ~ {{Items:[{{Slot:{slots[i]}b,id:"{keys_in[i].both}"}}]}} run function ac:autocraft/{func_path}\n')
+            file.write(f'execute if data block ~ ~1 ~ {{Items:[{{Slot:{slots[i]}b,id:"{keys_in[i].both}"}}]}} run function {namespace}:{func_path}\n')
         else:
           file.write('data modify entity @s ArmorItems[0] set value {id:"minecraft:jigsaw",Count:1b}\n')
           file.write(f'data modify entity @s ArmorItems[0].id set from block ~ ~1 ~ Items[{{Slot:{slots[i]}b}}].id\n')
-          file.write(f'execute if predicate ac:tags/{keys_in[i].namespace}/{keys_in[i].value} run function ac:autocraft/{func_path}\n')
+          file.write(f'execute if predicate {namespace}:tags/{keys_in[i].namespace}/{keys_in[i].value} run function {namespace}:{func_path}\n')
   with open('\\'.join(path.split('/')) + '.mcfunction','a+') as file:
     file.write(f'#{keys_in[8].both}\n')
     if keys_in[8].item:
       if keys_in[8].both == 'builtin:null':
-        file.write(f'execute unless data block ~ ~1 ~ {{Items:[{{Slot:{slots[8]}b}}]}} run function ac:autocraft/{func_path}/{keys_in[8].value}\n')
+        file.write(f'execute unless data block ~ ~1 ~ {{Items:[{{Slot:{slots[8]}b}}]}} run function {namespace}:{func_path}/{keys_in[8].value}\n')
       else:
-        file.write(f'execute if data block ~ ~1 ~ {{Items:[{{Slot:{slots[8]}b,id:"{keys_in[8].both}"}}]}} run function ac:autocraft/{func_path}/{keys_in[8].value}\n')
+        file.write(f'execute if data block ~ ~1 ~ {{Items:[{{Slot:{slots[8]}b,id:"{keys_in[8].both}"}}]}} run function {namespace}:{func_path}/{keys_in[8].value}\n')
     else:
       file.write('data modify entity @s ArmorItems[0] set value {id:"minecraft:jigsaw",Count:1b}\n')
       file.write(f'data modify entity @s ArmorItems[0].id set from block ~ ~1 ~ Items[{{Slot:{slots[8]}b}}].id\n')
-      file.write(f'execute if predicate ac:tags/{keys_in[8].namespace}/{keys_in[8].value} run function ac:autocraft/{func_path}/{keys_in[8].value}\n')
+      file.write(f'execute if predicate {namespace}:tags/{keys_in[8].namespace}/{keys_in[8].value} run function {namespace}:{func_path}/{keys_in[8].value}\n')
   with open('\\'.join(path.split('/')) + '\\' + keys_in[8].value+'.mcfunction','w+') as file:
     file.write(f'data modify block ~ ~1 ~ Items[{{Slot:0b}}] set value {{Slot:0b,id:"{out_id}",Count:{out_count}b}}\n')
     file.write('tag @s add ac.offering\n')
@@ -142,7 +147,7 @@ def write_functions(keys_in,out_id,out_count,root):
       if keys_in[i].both == 'builtin:null':
         file.write(f'data modify entity @s ArmorItems[1].tag.ac_last append value {{Slot:{slots[i]}b,id:"minecraft:structure_void",Count:1b,tag:{{ac_gui:1b,CustomModelData:2b,display:{{Name:\'""\'}}}}}}\n')
 
-def create_recipe(path,root):
+def create_recipe(path,root,namespace):
   with open(path) as file:
     data = json.load(file)
     ctype = data['type'].split(':')[-1]
@@ -170,7 +175,7 @@ def create_recipe(path,root):
                 if 'item' in i:
                   ops.append(i['item'])
               create_tag(ops,root)
-              op = 'ac:' + ops[0][ops[0].index(':') + 1:]
+              op = f'{namespace}:' + ops[0][ops[0].index(':') + 1:]
               key_values.append(ktag(op))
             else:
               key_values.append(kitem('builtin:null'))
@@ -185,7 +190,7 @@ def create_recipe(path,root):
         result_count = data['result']['count']
       else:
         result_count = 1
-      write_functions(keys_in,result_id,result_count,root)
+      write_functions(keys_in,result_id,result_count,root,namespace)
       return True
     elif ctype == 'crafting_shapeless':
       result_id = data['result']['item']
@@ -207,13 +212,13 @@ def create_recipe(path,root):
             if 'item' in i2:
               ops.append(i2['item'])
           create_tag(ops,root)
-          op = 'ac:' + ops[0][ops[0].index(':') + 1:]
+          op = f'{namespace}:' + ops[0][ops[0].index(':') + 1:]
           keys_in.append(ktag(op))
         else:
           keys_in.append(kitem('builtin:null'))
       for i2 in range(9-i):
         keys_in.append(kitem('builtin:null'))
-      write_functions(keys_in,result_id,result_count,root)
+      write_functions(keys_in,result_id,result_count,root,namespace)
       return True
     else:
       if not supress:
@@ -224,11 +229,11 @@ def create_recipe(path,root):
         else:
           log_print(f'invalid recipe. unable to create recipe ({os.path.basename(path)}) beacuse of an incompatible crafting_type ({ctype})')
         return False
-def create_from_dir(path,root):
+def create_from_dir(path,root,namespace):
   listdir = nested_paths(path)
   for f in listdir:
     if os.path.splitext(f)[1] == '.json':
-      create_recipe(f,root)
+      create_recipe(f,root,namespace)
 
 
 class gui(wx.Frame):
@@ -271,7 +276,7 @@ class gui(wx.Frame):
     self.input = wx.TextCtrl(panel, -1, value='[path to your recipes datapack]', pos=(20, 20), size=(500, 40), style = wx.TE_MULTILINE)
   
     wx.StaticText(panel, -1, label='destination path:', pos=(20, 60), size=(500, 20))
-    self.output = wx.TextCtrl(panel, -1, value='[path to your auocrafting pack]', pos=(20, 80), size=(500, 40), style = wx.TE_MULTILINE)
+    self.output = wx.TextCtrl(panel, -1, value='[path to your datapacks folder]', pos=(20, 80), size=(500, 40), style = wx.TE_MULTILINE)
   
     panel.Bind(wx.EVT_BUTTON, self.generate, wx.Button(panel, -1, label='generate reicpes', pos=(200,140), size=(160,40)))
   
@@ -288,7 +293,10 @@ class gui(wx.Frame):
     with wx.DirDialog (None, "choose source directory", "", wx.DD_DEFAULT_STYLE | wx.DD_DIR_MUST_EXIST) as dirDialog:
       if dirDialog.ShowModal() == wx.ID_CANCEL:
         return
-      self.input.SetValue(dirDialog.GetPath())
+      path = dirDialog.GetPath()
+      self.input.SetValue(path)
+      if self.output.GetValue() == '[path to your datapacks folder]':
+        self.output.SetValue(os.path.join(os.path.dirname(path), os.path.basename(os.path.normpath(path))) + '.ac.g')
   def open(self, e):
     with wx.DirDialog (None, "choose destination directory", "", wx.DD_DEFAULT_STYLE | wx.DD_DIR_MUST_EXIST) as dirDialog:
       if dirDialog.ShowModal() == wx.ID_CANCEL:
@@ -297,25 +305,27 @@ class gui(wx.Frame):
   def reset(self, e):
     with wx.MessageDialog(self,'are you sure you want to delete all recipes?','reset all recipes?',wx.YES_NO) as dlg:
       if dlg.ShowModal() == wx.ID_YES:
-        root = pack_root(self.output.GetValue())
+        root = pack_nmsp(self.output.GetValue())
         if os.path.exists(root):
           log_print('i sure hope you know what you\'re doing!')
           length = len(nested_paths(os.path.join(root,'ac','functions','autocraft','recipes')))
           clear_contents(os.path.join(root,'ac','functions','autocraft','recipes'))
           clear_contents(os.path.join(root,'ac','predicates','tags'))
           clear_contents(os.path.join(root,'ac','tags','items'))
-          open(os.path.join(root,'ac','functions','autocraft','craft.mcfunction'),'w+').close()
+          open(os.path.join(root,'ac','functions','autocraft','recipes.mcfunction'),'w+').close()
           log_print(f'deleted {length} files')
         else:
           log_print(f'invalid path. the path specified does not exist. ({root[4:]})')
   def generate(self,e):
     path = self.input.GetValue()
-    dest = pack_root(self.output.GetValue())
+    dest = verify_pack_root(self.output.GetValue())
+    namespace = simp_nmsp_path(os.path.basename(os.path.normpath(dest)))
+    dest = os.path.join(dest,'data',namespace)
     if not os.path.isdir(os.path.join(dest,'recipes')):
       log_print('no \'recipes\' folder found. creating new folder')
 
     if os.path.isdir(os.path.join(path,'data')):
-      path = os.path.join(path,'data')
+      path = os.path.normpath(os.path.join(path,'data'))
       tags = [(os.path.join(path, f, 'tags', 'items'),f) for f in os.listdir(path) if os.path.isdir(os.path.join(path, f, 'tags', 'items'))]
       all_tags = []
       namespaces = []
@@ -326,12 +336,13 @@ class gui(wx.Frame):
           namespaces.append(f[1])
         all_tags = nest
       for i in range(len(all_tags)):
-        create_predicate(all_tags[i],namespaces[i],dest)
+        tagname = os.path.splitext(os.path.join(*all_tags[i][len(path):].split(os.sep)[4:]))[0]
+        create_predicate(ktag(f'{namespaces[i]}:{tagname}'),dest)
 
 
       paths = [os.path.join(path, f, 'recipes') for f in os.listdir(path) if os.path.isdir(os.path.join(path, f, 'recipes'))]
       for f in paths:
-        create_from_dir(f,dest)
+        create_from_dir(f,dest,namespace)
     else:
       log_print('invalid path. make sure you are using the datapack and not the recipes or data folder')
 app = wx.App()
