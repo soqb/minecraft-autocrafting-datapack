@@ -284,7 +284,7 @@ class gui(wx.Frame):
     self.input = wx.TextCtrl(panel, -1, value='[path to your recipes datapack]', pos=(20, 20), size=(500, 40), style = wx.TE_MULTILINE)
   
     wx.StaticText(panel, -1, label='destination path:', pos=(20, 60), size=(500, 20))
-    self.output = wx.TextCtrl(panel, -1, value='[path to your datapacks folder]', pos=(20, 80), size=(500, 40), style = wx.TE_MULTILINE)
+    self.output = wx.TextCtrl(panel, -1, value='[path to your newly created datapack folder]', pos=(20, 80), size=(500, 40), style = wx.TE_MULTILINE)
   
     panel.Bind(wx.EVT_BUTTON, self.generate, wx.Button(panel, -1, label='generate reicpes', pos=(200,140), size=(160,40)))
   
@@ -303,7 +303,7 @@ class gui(wx.Frame):
         return
       path = dirDialog.GetPath()
       self.input.SetValue(path)
-      if self.output.GetValue() == '[path to your datapacks folder]':
+      if self.output.GetValue() == '[path to your newly created datapack folder]':
         self.output.SetValue(os.path.join(os.path.dirname(path), os.path.basename(os.path.normpath(path))) + '.ac.g')
   def open(self, e):
     with wx.DirDialog (None, "choose destination directory", "", wx.DD_DEFAULT_STYLE | wx.DD_DIR_MUST_EXIST) as dirDialog:
